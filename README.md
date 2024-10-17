@@ -4,13 +4,13 @@
 
 Este é um projeto de blockchain local desenvolvimento em Go baseado em Ethereum, tem como objetivo auxiliar nos estudos relacionados a blockchain.
 
-### 💻 Pré-requisitos
+## 💻 Pré-requisitos
 
 Antes de começar, certifique-se que possui todos os requisitos necessários para executar o projeto
 
 - `< Go / v1.23.2 >`
 
-### 🚀 Executando
+## 🚀 Executando
 
 Para executar o **blockchain_go**, siga estas etapas:
 
