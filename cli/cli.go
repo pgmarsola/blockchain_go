@@ -8,8 +8,9 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/tensor-programming/golang-blockchain/blockchain"
-	"github.com/tensor-programming/golang-blockchain/wallet"
+	"blockchain_go/blockchain"
+	"blockchain_go/miner"
+	"blockchain_go/wallet"
 )
 
 type CommandLine struct{}
@@ -71,13 +72,13 @@ func (cli *CommandLine) printChain() {
 	}
 }
 
-func (cli *CommandLine) createBlockchain(address string) {
-	chain := blockchain.InitBlockchain(address)
+func (cli *CommandLine) createBlockchain() {
+	chain := blockchain.InitBlockchain()
 	defer chain.Database.Close()
 
 	fmt.Println("Blockchain created successfully!")
 
-	chain.Miner()
+	miner.Mine()
 }
 
 func (cli *CommandLine) getBalance(address string) {
@@ -113,7 +114,6 @@ func (cli *CommandLine) Run() {
 	listAddressesCmd := flag.NewFlagSet("listaddresses", flag.ExitOnError)
 
 	getBalanceAddress := getBalanceCmd.String("address", "", "address of wallet")
-	createBlockchainAddress := createBlockchainCmd.String("address", "", "address of miner")
 	sendFrom := sendCmd.String("from", "", "address of wallet sender")
 	sendTo := sendCmd.String("to", "", "address of wallet receiver")
 	sendAmount := sendCmd.Int("amount", 0, "amount to send")
@@ -162,11 +162,7 @@ func (cli *CommandLine) Run() {
 		cli.getBalance(*getBalanceAddress)
 	}
 	if createBlockchainCmd.Parsed() {
-		if *createBlockchainAddress == "" {
-			createBlockchainCmd.Usage()
-			runtime.Goexit()
-		}
-		cli.createBlockchain(*createBlockchainAddress)
+		cli.createBlockchain()
 	}
 
 	if printChainCmd.Parsed() {
