@@ -8,9 +8,9 @@ import (
 	"runtime"
 	"strconv"
 
-	"blockchain_go/blockchain"
-	"blockchain_go/miner"
-	"blockchain_go/wallet"
+	"blockchain_go/structure/blockchain"
+	"blockchain_go/structure/miner"
+	"blockchain_go/structure/wallet"
 )
 
 type CommandLine struct{}
@@ -18,7 +18,7 @@ type CommandLine struct{}
 func (cli *CommandLine) printUsage() {
 	fmt.Println("Usage: ")
 	fmt.Println("getbalance -address ADDRESS - get balance for address")
-	fmt.Println("createblockchain -address ADDRESS - creates a blockchain")
+	fmt.Println("createblockchain - creates a blockchain")
 	fmt.Println("printchain - Prints the blocks in the chain")
 	fmt.Println("send -from FROM -to TO -amount AMOUNT - send amount from to")
 	fmt.Println("createwallet - create a new Wallet")

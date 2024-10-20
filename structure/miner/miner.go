@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"runtime"
 
-	"blockchain_go/blockchain"
-	"blockchain_go/wallet"
+	"blockchain_go/structure/blockchain"
+	"blockchain_go/structure/wallet"
 
 	"github.com/robfig/cron/v3"
 )
