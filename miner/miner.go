@@ -7,32 +7,45 @@ import (
 	"blockchain_go/blockchain"
 	"blockchain_go/wallet"
 
-	"github.com/carlescere/scheduler"
+	"github.com/robfig/cron/v3"
 )
 
 type Miner struct {
+	address string
 }
 
 func Mine() {
 	fmt.Println("Start Miner!")
 
+	createMiner()
+
+	c := cron.New(cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)))
+
+	c.AddFunc("@every 1m", task)
+
+	go c.Start()
+
+	runtime.Goexit()
+}
+
+func createMiner() *Miner {
 	wallets, _ := wallet.CreateWallets()
 	address := wallets.AddWallet()
 	wallets.SaveFiles()
 
-	job := func() {
-		fmt.Println("Minning...")
-		miner := address
-		chain := blockchain.ContinueBlockchain(miner)
+	value := Miner{address: address}
 
-		defer chain.Database.Close()
+	return &value
+}
 
-		tx := blockchain.NewTransaction(miner, miner, 0, chain)
-		chain.AddBlock([]*blockchain.Transaction{tx})
-		fmt.Println("Mine complete: %s", chain.LastHash)
-	}
+func task() {
+	fmt.Println("Minning...")
+	miner := Miner{}.address
+	chain := blockchain.ContinueBlockchain(miner)
 
-	scheduler.Every(60).Seconds().NotImmediately().Run(job)
+	defer chain.Database.Close()
 
-	runtime.Goexit()
+	tx := blockchain.NewTransaction(miner, miner, 0, chain)
+	chain.AddBlock([]*blockchain.Transaction{tx})
+	fmt.Println("Mine complete: %x\n", chain.LastHash)
 }
