@@ -1,14 +1,16 @@
 package blockchain
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/gob"
 	"encoding/hex"
 	"fmt"
+	"math/big"
 	"os"
 	"runtime"
 
 	"github.com/dgraph-io/badger"
-
-	"github.com/carlescere/scheduler"
 )
 
 const (
@@ -16,6 +18,10 @@ const (
 	dbFile      = "./tmp/blocks/MANIFEST"
 	genesisData = "First Transaction from Genesis"
 )
+
+type Data struct {
+	Name string
+}
 
 type Blockchain struct {
 	LastHash []byte
@@ -151,7 +157,7 @@ Work:
 	return accumulated, unspentOuts
 }
 
-func InitBlockchain(address string) *Blockchain {
+func InitBlockchain() *Blockchain {
 	var lastHash []byte
 
 	if DBExists() == true {
@@ -167,8 +173,10 @@ func InitBlockchain(address string) *Blockchain {
 
 	Handle(err)
 
+	SetName()
+
 	err = db.Update(func(txn *badger.Txn) error {
-		cbtx := CoinBaseTx(address, genesisData)
+		cbtx := CoinBaseTx(Data{}.Name, genesisData)
 		genesis := Genesis(cbtx)
 
 		fmt.Println("Genesis created")
@@ -251,22 +259,19 @@ func (iter *BlockchainInterator) Next() *Block {
 	return block
 }
 
-func (chain *Blockchain) Miner() {
-	fmt.Println("Start Miner!")
+func SetName() *Data {
+	var encoded bytes.Buffer
+	var hash [32]byte
 
-	job := func() {
-		fmt.Println("Minning...")
-		chain := ContinueBlockchain("teste")
+	target := big.NewInt(1)
+	target.Lsh(target, uint(256-Difficulty))
 
-		defer chain.Database.Close()
+	encode := gob.NewEncoder(&encoded)
+	err := encode.Encode(target)
+	Handle(err)
 
-		tx := NewTransaction("teste", "teste", 0, chain)
-		chain.AddBlock([]*Transaction{tx})
-		fmt.Println("great mine")
-	}
-	// Run every 2 seconds but not now.
-	scheduler.Every(60).Seconds().NotImmediately().Run(job)
+	hash = sha256.Sum256(encoded.Bytes())
+	value := Data{string(hash[:])}
 
-	// Keep the program from not exiting.
-	runtime.Goexit()
+	return &value
 }

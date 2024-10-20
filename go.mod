@@ -1,4 +1,4 @@
-module github.com/tensor-programming/golang-blockchain
+module blockchain_go
 
 go 1.23.2
 
@@ -6,7 +6,7 @@ require golang.org/x/crypto v0.26.0
 
 require (
 	github.com/carlescere/scheduler v0.0.0-20170109141437-ee74d2f83d82 // indirect
-	github.com/robfig/cron/v3 v3.0.0 // indirect
+	github.com/robfig/cron/v3 v3.0.0 //indirect
 )
 
 require (

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/tensor-programming/golang-blockchain/cli"
+	"blockchain_go/cli"
 )
 
 func main() {
