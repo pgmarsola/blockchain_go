@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strconv"
 
+	"blockchain_go/conection"
 	"blockchain_go/structure/blockchain"
 	"blockchain_go/structure/miner"
 	"blockchain_go/structure/wallet"
@@ -23,6 +24,7 @@ func (cli *CommandLine) printUsage() {
 	fmt.Println("send -from FROM -to TO -amount AMOUNT - send amount from to")
 	fmt.Println("createwallet - create a new Wallet")
 	fmt.Println("listaddresses - list all adresses in our wallet file")
+	fmt.Println("server - create local server apis")
 }
 
 func (cli *CommandLine) validateArgs() {
@@ -72,6 +74,11 @@ func (cli *CommandLine) printChain() {
 	}
 }
 
+func (cli *CommandLine) server() {
+	fmt.Println("create local server :8080")
+	conection.Client()
+}
+
 func (cli *CommandLine) createBlockchain() {
 	chain := blockchain.InitBlockchain()
 	defer chain.Database.Close()
@@ -112,6 +119,7 @@ func (cli *CommandLine) Run() {
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
 	createWalletCmd := flag.NewFlagSet("createwallet", flag.ExitOnError)
 	listAddressesCmd := flag.NewFlagSet("listaddresses", flag.ExitOnError)
+	serverCmd := flag.NewFlagSet("server", flag.ExitOnError)
 
 	getBalanceAddress := getBalanceCmd.String("address", "", "address of wallet")
 	sendFrom := sendCmd.String("from", "", "address of wallet sender")
@@ -149,6 +157,11 @@ func (cli *CommandLine) Run() {
 		if err != nil {
 			log.Panic(err)
 		}
+	case "server":
+		err := serverCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
 	default:
 		cli.printUsage()
 		runtime.Goexit()
@@ -163,6 +176,10 @@ func (cli *CommandLine) Run() {
 	}
 	if createBlockchainCmd.Parsed() {
 		cli.createBlockchain()
+	}
+
+	if serverCmd.Parsed() {
+		cli.server()
 	}
 
 	if printChainCmd.Parsed() {
