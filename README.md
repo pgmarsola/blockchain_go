@@ -23,7 +23,7 @@ Se na execução falhar por não conseguir baixar as dependencias automaticament
 - Iniciar o blockchain
 
 ```
-  go run main.go createblockchain -address < string >
+  go run main.go createblockchain
 ```
 
 > [!NOTE]
