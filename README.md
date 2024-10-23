@@ -23,11 +23,23 @@ Se na execução falhar por não conseguir baixar as dependencias automaticament
 - Iniciar o blockchain
 
 ```
-  go run main.go createblockchain -address < string >
+  go run main.go createblockchain
 ```
 
 > [!NOTE]
 > Ao iniciar o blockchain, inicia-se junto o minerador, onde ficará printando no seu terminal todos os blocos minerados, isso torna seu terminal inutilizavel, para executar os demais comandos, deve-se abrir um novo terminal.
+
+- Inicia servidor frontend
+
+```
+  go run main.go serverFront
+```
+
+- Inicia servidor APIs
+
+```
+  go run main.go serverApi
+```
 
 - Criar carteira
 
