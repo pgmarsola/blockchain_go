@@ -29,54 +29,10 @@ Se na execução falhar por não conseguir baixar as dependencias automaticament
 > [!NOTE]
 > Ao iniciar o blockchain, inicia-se junto o minerador, onde ficará printando no seu terminal todos os blocos minerados, isso torna seu terminal inutilizavel, para executar os demais comandos, deve-se abrir um novo terminal.
 
-- Inicia servidor frontend
-
-```
-  go run main.go serverFront
-```
-
-- Inicia servidor APIs
-
-```
-  go run main.go serverApi
-```
-
-- Criar carteira
-
-```
-  go run main.go createwallet
-```
-
-- Listar todos os endereços de carteiras criados de forma criptografada
-
-```
-  go run main.go listadresses
-```
-
-- Consultar saldo em carteira
-
-```
-  go run main.go getbalance -address < wallet address >
-```
-
-- Realizar uma transação
-
-```
-  go run main.go send -from < wallet address > -to < wallet address > -amount < value >
-```
-
-- Consultar listagem de blocos criados
-
-```
-  go run main.go printchain
-```
-
-- Lista de comandos
-
-```
-  go run main.go
-```
-
 ## 🤝 Contribuindo
 
 Este projeto não aceita contribuições no momento.
+
+## 📩 Contato
+
+Em caso de dúvidas ou sugestões envie um email para: `pgmarsola@gmail.com`
