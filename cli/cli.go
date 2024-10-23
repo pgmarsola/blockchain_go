@@ -8,9 +8,10 @@ import (
 	"runtime"
 	"strconv"
 
-	"blockchain_go/blockchain"
-	"blockchain_go/miner"
-	"blockchain_go/wallet"
+	"blockchain_go/apis"
+	"blockchain_go/structure/blockchain"
+	"blockchain_go/structure/miner"
+	"blockchain_go/structure/wallet"
 )
 
 type CommandLine struct{}
@@ -18,11 +19,13 @@ type CommandLine struct{}
 func (cli *CommandLine) printUsage() {
 	fmt.Println("Usage: ")
 	fmt.Println("getbalance -address ADDRESS - get balance for address")
-	fmt.Println("createblockchain -address ADDRESS - creates a blockchain")
+	fmt.Println("createblockchain - creates a blockchain")
 	fmt.Println("printchain - Prints the blocks in the chain")
 	fmt.Println("send -from FROM -to TO -amount AMOUNT - send amount from to")
 	fmt.Println("createwallet - create a new Wallet")
 	fmt.Println("listaddresses - list all adresses in our wallet file")
+	fmt.Println("serverApi - create local server apis")
+	fmt.Println("serverFront - create local server apis")
 }
 
 func (cli *CommandLine) validateArgs() {
@@ -72,6 +75,16 @@ func (cli *CommandLine) printChain() {
 	}
 }
 
+func (cli *CommandLine) serverApi() {
+	fmt.Println("create local server backend :8080")
+	apis.Client()
+}
+
+func (cli *CommandLine) serverFront() {
+	fmt.Println("create local server frontend :8081")
+	apis.Interface()
+}
+
 func (cli *CommandLine) createBlockchain() {
 	chain := blockchain.InitBlockchain()
 	defer chain.Database.Close()
@@ -112,6 +125,8 @@ func (cli *CommandLine) Run() {
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
 	createWalletCmd := flag.NewFlagSet("createwallet", flag.ExitOnError)
 	listAddressesCmd := flag.NewFlagSet("listaddresses", flag.ExitOnError)
+	serverApiCmd := flag.NewFlagSet("serverApi", flag.ExitOnError)
+	serverFrontCmd := flag.NewFlagSet("serverFront", flag.ExitOnError)
 
 	getBalanceAddress := getBalanceCmd.String("address", "", "address of wallet")
 	sendFrom := sendCmd.String("from", "", "address of wallet sender")
@@ -149,6 +164,16 @@ func (cli *CommandLine) Run() {
 		if err != nil {
 			log.Panic(err)
 		}
+	case "serverApi":
+		err := serverApiCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
+	case "serverFront":
+		err := serverFrontCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
 	default:
 		cli.printUsage()
 		runtime.Goexit()
@@ -163,6 +188,14 @@ func (cli *CommandLine) Run() {
 	}
 	if createBlockchainCmd.Parsed() {
 		cli.createBlockchain()
+	}
+
+	if serverApiCmd.Parsed() {
+		cli.serverApi()
+	}
+
+	if serverFrontCmd.Parsed() {
+		cli.serverFront()
 	}
 
 	if printChainCmd.Parsed() {

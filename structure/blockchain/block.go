@@ -8,17 +8,17 @@ import (
 )
 
 type Block struct {
-	Hash             []byte
-	Transactions     []*Transaction
-	PrevHash         []byte
-	Nonce            int
+	Hash         []byte
+	Transactions []*Transaction
+	PrevHash     []byte
+	Nonce        int
 }
 
-func (b *Block) HashTransactions() []byte{
+func (b *Block) HashTransactions() []byte {
 	var txHashes [][]byte
 	var txHash [32]byte
 
-	for _, tx := range b.Transactions{
+	for _, tx := range b.Transactions {
 		txHashes = append(txHashes, tx.ID)
 	}
 
@@ -44,7 +44,7 @@ func (b *Block) Serialize() []byte {
 	var res bytes.Buffer
 	encoder := gob.NewEncoder(&res)
 
-	err :=encoder.Encode(b)
+	err := encoder.Encode(b)
 
 	Handle(err)
 
@@ -62,8 +62,8 @@ func Deserialize(data []byte) *Block {
 	return &block
 }
 
-func Handle(err error){
-	if err != nil{
+func Handle(err error) {
+	if err != nil {
 		log.Panic(err)
 	}
 }

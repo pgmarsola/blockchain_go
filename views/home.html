@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blockchain Go</title>
+    <link rel="stylesheet" href="/styles/main.css" />
+  </head>
+    <body>
+      <div class="row">
+        <nav id="navbar">
+           <header>Usage Documentation</header>
+           <a class="nav-link" href="#Introduction">Introdução</a>
+           <a class="nav-link" href="#Prerequisites">Pré-requisitos</a>
+           <a class="nav-link" href="#Running">Executando</a>
+           <a class="nav-link" href="#Apis">APIs</a>
+           <a class="nav-link" href="#Project">Projeto</a>
+         </nav>
+         <main id="main-doc">
+           <section class="main-section" id="Introduction">
+             <header>
+               <h1>Introdução</h1>
+             </header>
+             <p>Go é uma linguagem de programação criada pela Google e lançada em código livre em novembro de 2009.</p>
+             <p></p>
+             <p>Este é um projeto de blockchain local desenvolvimento em Go baseado em Ethereum, tem como objetivo auxiliar nos estudos relacionados a blockchain.</p>
+     
+           </section>
+           <section class="main-section" id="Prerequisites">
+             <header ><h1>Pré-requisitos</h1></header>
+             <p>Antes de começar, certifique-se que possui todos os requisitos necessários para executar o projeto.</p>
+             <ul>
+              <li>Go / v1.23.2</li>
+             </ul>
+           </section>
+           <section class="main-section" id="Running">
+             <header>
+               <h1>Executando</h1>
+             </header>
+             <p>Para executar o <b>blockchain_go</b>, siga estas etapas:</p>
+             <p></p>
+             <p>Se na execução falhar por não conseguir baixar as dependencias automaticamente, execute o comando abaixo:</p>
+             <code> go get (nome dependencia)</code>
+     
+            <ul><li>Iniciar o blockchain</li></ul>
+            <code>go run main.go createblockchain</code>
+
+            <ul><li>Iniciar servidor de APIs</li></ul>
+            <code>go run main.go serverApi</code>
+            <p>O servidor de APIs roda na porta :8080</p>
+
+            <ul><li>Iniciar servidor do frontend</li></ul>
+            <code>go run main.go serverFront</code>
+            <p>O servidor do frontend roda na porta :8081</p>
+           </section>
+
+           <section class="main-section" id="Apis">
+             <header><h1>APIs</h1></header>
+             <p>Este projeto possui APis disponíveis que torna possivel, via postman, criar carteiras (quantas quiser), ver todas as carteiras criadas, enviar tokens entre carteiras e exibir a cadeia de blocos</p>
+             <p>Criar carteira</p>
+             <code>/createwallet</code>
+
+             <p>Listar todas as carteiras criadas</p>
+             <code>/allwallets</code>
+
+           </section>
+           <section class="main-section" id="Project">
+             <header><h1>Projeto</h1></header>
+             <p>Este projeto está disponível no github, para acessar clique no link abaixo:</p>
+             <p><a href="https://github.com/pgmarsola/blockchain_go/">github/blockchain_go</a></p>
+           </section>
+     </body>
+   </html>
