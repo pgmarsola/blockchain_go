@@ -80,11 +80,6 @@ func (cli *CommandLine) serverApi() {
 	apis.Client()
 }
 
-func (cli *CommandLine) serverFront() {
-	fmt.Println("create local server frontend :8081")
-	apis.Interface()
-}
-
 func (cli *CommandLine) createBlockchain() {
 	chain := blockchain.InitBlockchain()
 	defer chain.Database.Close()
@@ -192,10 +187,6 @@ func (cli *CommandLine) Run() {
 
 	if serverApiCmd.Parsed() {
 		cli.serverApi()
-	}
-
-	if serverFrontCmd.Parsed() {
-		cli.serverFront()
 	}
 
 	if printChainCmd.Parsed() {
