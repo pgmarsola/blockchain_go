@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"blockchain_go/structure/utils"
 	"encoding/json"
 	"log"
 	"os"
@@ -9,12 +10,12 @@ import (
 const walletFile = "./tmp/wallets.data"
 
 type Wallets struct {
-	Wallets map[string]*Wallet
+	Wallets map[string]*utils.GenericWallet
 }
 
 func CreateWallets() (*Wallets, error) {
 	wallets := Wallets{}
-	wallets.Wallets = make(map[string]*Wallet)
+	wallets.Wallets = make(map[string]*utils.GenericWallet)
 
 	err := wallets.LoadFile()
 
@@ -22,7 +23,7 @@ func CreateWallets() (*Wallets, error) {
 }
 
 func (ws *Wallets) AddWallet() string {
-	wallet := MakeWallet()
+	wallet := utils.MakeGenericWallet()
 	address := string(wallet.Address())
 	ws.Wallets[address] = wallet
 
@@ -39,7 +40,7 @@ func (ws *Wallets) GetAllAdresses() []string {
 	return addresses
 }
 
-func (ws Wallets) GetWallet(address string) Wallet {
+func (ws Wallets) GetWallet(address string) utils.GenericWallet {
 	return *ws.Wallets[address]
 }
 
