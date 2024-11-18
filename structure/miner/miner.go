@@ -40,14 +40,12 @@ func randomMiner() *Miner {
 
 func task() {
 	fmt.Println("Minning...")
-	randomMiner()
-	miner := Miner{}.address
+	miner := randomMiner()
 
-	chain := blockchain.ContinueBlockchain(miner)
+	chain := blockchain.ContinueBlockchain(miner.address)
 
 	defer chain.Database.Close()
 
-	tx := blockchain.NewTransaction(miner, miner, 0, chain)
+	tx := blockchain.NewTransaction(miner.address, miner.address, 0, chain)
 	chain.AddBlock([]*blockchain.Transaction{tx})
-	fmt.Println("Mine complete: %x\n", chain.LastHash)
 }
