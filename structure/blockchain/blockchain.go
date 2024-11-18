@@ -1,6 +1,8 @@
 package blockchain
 
 import (
+	"blockchain_go/structure/member"
+	"blockchain_go/structure/validator"
 	"bytes"
 	"crypto/sha256"
 	"encoding/gob"
@@ -19,8 +21,8 @@ const (
 	genesisData = "First Transaction from Genesis"
 )
 
-type Data struct {
-	Name string
+type Validator struct {
+	address string
 }
 
 type Blockchain struct {
@@ -173,10 +175,20 @@ func InitBlockchain() *Blockchain {
 
 	Handle(err)
 
-	SetName()
+	setName()
 
 	err = db.Update(func(txn *badger.Txn) error {
-		cbtx := CoinBaseTx(Data{}.Name, genesisData)
+
+		for i := 0; i < 3; i++ {
+			createValidators()
+		}
+
+		members, _ := member.CreateMembers()
+		address := members.AddMember()
+		members.SaveFiles()
+
+		cbtx := CoinBaseTx(address, genesisData)
+
 		genesis := Genesis(cbtx)
 
 		fmt.Println("Genesis created")
@@ -259,7 +271,7 @@ func (iter *BlockchainInterator) Next() *Block {
 	return block
 }
 
-func SetName() *Data {
+func setName() *string {
 	var encoded bytes.Buffer
 	var hash [32]byte
 
@@ -271,7 +283,17 @@ func SetName() *Data {
 	Handle(err)
 
 	hash = sha256.Sum256(encoded.Bytes())
-	value := Data{string(hash[:])}
+	value := string(hash[:])
+
+	return &value
+}
+
+func createValidators() *Validator {
+	validators, _ := validator.CreateValidators()
+	address := validators.AddValidator()
+	validators.SaveFiles()
+
+	value := Validator{address: address}
 
 	return &value
 }

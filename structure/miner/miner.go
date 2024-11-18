@@ -2,10 +2,11 @@ package miner
 
 import (
 	"fmt"
+	"math/rand"
 	"runtime"
 
 	"blockchain_go/structure/blockchain"
-	"blockchain_go/structure/wallet"
+	"blockchain_go/structure/validator"
 
 	"github.com/robfig/cron/v3"
 )
@@ -17,30 +18,31 @@ type Miner struct {
 func Mine() {
 	fmt.Println("Start Miner!")
 
-	createMiner()
-
 	c := cron.New(cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)))
 
-	c.AddFunc("@every 1m", task)
+	c.AddFunc("@every 30s", task)
 
 	go c.Start()
 
 	runtime.Goexit()
 }
 
-func createMiner() *Miner {
-	wallets, _ := wallet.CreateWallets()
-	address := wallets.AddWallet()
-	wallets.SaveFiles()
+func randomMiner() *Miner {
+	validators, _ := validator.CreateValidators()
+	addresses := validators.GetAllAdresses()
 
-	value := Miner{address: address}
+	n := rand.Int() % len(addresses)
+
+	value := Miner{address: addresses[n]}
 
 	return &value
 }
 
 func task() {
 	fmt.Println("Minning...")
+	randomMiner()
 	miner := Miner{}.address
+
 	chain := blockchain.ContinueBlockchain(miner)
 
 	defer chain.Database.Close()
