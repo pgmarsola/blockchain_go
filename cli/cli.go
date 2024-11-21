@@ -8,7 +8,6 @@ import (
 	"runtime"
 	"strconv"
 
-	"blockchain_go/apis"
 	"blockchain_go/structure/blockchain"
 	"blockchain_go/structure/miner"
 	"blockchain_go/structure/wallet"
@@ -77,7 +76,7 @@ func (cli *CommandLine) printChain() {
 
 func (cli *CommandLine) serverApi() {
 	fmt.Println("create local server backend :8080")
-	apis.Client()
+	//apis.Client()
 }
 
 func (cli *CommandLine) createBlockchain() {
