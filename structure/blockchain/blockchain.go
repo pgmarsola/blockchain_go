@@ -12,6 +12,8 @@ import (
 	"os"
 	"runtime"
 
+	"sync"
+
 	"github.com/dgraph-io/badger"
 )
 
@@ -34,6 +36,8 @@ type BlockchainInterator struct {
 	CurrentHash []byte
 	Database    *badger.DB
 }
+
+var ChainMutex sync.Mutex
 
 func DBExists() bool {
 	if _, err := os.Stat(dbFile); os.IsNotExist(err) {
@@ -89,24 +93,27 @@ func (chain *Blockchain) FindUnspentTransactions(address string) []Transaction {
 
 		Outputs:
 			for outIdx, out := range tx.Outputs {
+				// Se esse output já foi gasto, pule
 				if spentTxOs[txID] != nil {
-					for _, spentOut := range spentTxOs[txID] {
-						if spentOut == outIdx {
+					for _, spentOutIdx := range spentTxOs[txID] {
+						if spentOutIdx == outIdx {
 							continue Outputs
 						}
 					}
 				}
 
+				// Se esse output pode ser desbloqueado pelo address
 				if out.CanBeUnlocked(address) {
 					unspentTxs = append(unspentTxs, *tx)
 				}
 			}
 
-			if tx.IsCoinBase() == false {
+			// Marcar os outputs gastos pelos inputs
+			if !tx.IsCoinBase() {
 				for _, in := range tx.Inputs {
 					if in.CanUnlock(address) {
 						inTxID := hex.EncodeToString(in.ID)
-						spentTxOs[inTxID] = append(spentTxOs[inTxID])
+						spentTxOs[inTxID] = append(spentTxOs[inTxID], in.Output)
 					}
 				}
 			}
@@ -119,6 +126,7 @@ func (chain *Blockchain) FindUnspentTransactions(address string) []Transaction {
 
 	return unspentTxs
 }
+
 
 func (chain *Blockchain) FindUTXO(address string) []TxOutput {
 	var UTXOs []TxOutput

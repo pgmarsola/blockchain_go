@@ -64,7 +64,8 @@ func NewTransaction(from string, to string, amount int, chain *Blockchain) *Tran
 	outputs = append(outputs, TxOutput{amount, to})
 
 	if accumulated > amount {
-		outputs = append(outputs, TxOutput{accumulated - amount, from})
+		newValue := accumulated - amount
+		outputs = append(outputs, TxOutput{newValue, from})
 	}
 
 	tx := Transaction{nil, inputs, outputs}

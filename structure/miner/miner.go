@@ -39,6 +39,9 @@ func randomMiner() *Miner {
 }
 
 func task() {
+	blockchain.ChainMutex.Lock()
+	defer blockchain.ChainMutex.Unlock()
+	
 	fmt.Println("Minning...")
 	miner := randomMiner()
 
