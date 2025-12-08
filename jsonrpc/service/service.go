@@ -1,9 +1,11 @@
 package service
 
 import (
+	"blockchain_go/security"
 	"blockchain_go/structure/blockchain"
 	"blockchain_go/structure/wallet"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -76,20 +78,30 @@ func (t *Server) GetBalance(r *http.Request, args *Args, reply *int) (err error)
 
 func (t *Server) Transfer(r *http.Request, args *Args, reply *TransferReply) (err error) {
 	blockchain.ChainMutex.Lock()
-    defer blockchain.ChainMutex.Unlock()
-	
+	defer blockchain.ChainMutex.Unlock()
+
 	chain := blockchain.ContinueBlockchain(args.Address)
 	defer chain.Database.Close()
 
 	tx := blockchain.NewTransaction(args.Address, args.To, args.Amount, chain)
 	chain.AddBlock([]*blockchain.Transaction{tx})
-	
+
 	*reply = TransferReply{From: args.Address, To: args.To, Value: args.Amount}
 	json.NewEncoder(os.Stdout).Encode(*reply)
 	return nil
 }
 
 func (t *Server) Mint(r *http.Request, args *Args, reply *MintReply) (err error) {
+	auth := r.Header.Get("Authorization")
+	if auth == "" {
+		return errors.New("authorization header required")
+	}
+
+	var perm security.Permission
+	if err := perm.Level(auth); err != nil {
+		return err
+	}
+	
 	blockchain.ChainMutex.Lock()
 	defer blockchain.ChainMutex.Unlock()
 
