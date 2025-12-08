@@ -41,6 +41,16 @@ func CoinBaseTx(to, data string) *Transaction {
 	return &tx
 }
 
+func MintCoinTx(to string, amount int) *Transaction {
+	txin := TxInput{[]byte{}, -1, "Minting new coins"}
+	txout := TxOutput{amount, to}
+	
+	tx := Transaction{nil, []TxInput{txin}, []TxOutput{txout}}
+	tx.SetId()
+
+	return &tx
+}
+
 func NewTransaction(from string, to string, amount int, chain *Blockchain) *Transaction {
 	var inputs []TxInput
 	var outputs []TxOutput
