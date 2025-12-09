@@ -23,5 +23,4 @@ func Run() {
 
 	log.Printf("Ouvindo o servidor na porta %s", port)
 	log.Fatal(http.ListenAndServe(port, r))
-
 }

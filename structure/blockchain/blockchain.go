@@ -88,7 +88,22 @@ func (chain *Blockchain) FindUnspentTransactions(address string) []Transaction {
 	for {
 		block := iter.Next()
 
-		for _, tx := range block.Transactions {
+		// load transactions for this block from DB key "txs-<blockHash>"
+		var blockTxs []*Transaction
+		_ = iter.Database.View(func(txn *badger.Txn) error {
+			txsKey := append([]byte("txs-"), block.Hash...)
+			item, err := txn.Get(txsKey)
+			if err != nil {
+				return nil
+			}
+			return item.Value(func(val []byte) error {
+				blockTxs = DeserializeTransactions(val)
+				return nil
+			})
+		})
+
+		// iterate over transactions loaded for this block
+		for _, tx := range blockTxs {
 			txID := hex.EncodeToString(tx.ID)
 
 		Outputs:
@@ -126,7 +141,6 @@ func (chain *Blockchain) FindUnspentTransactions(address string) []Transaction {
 
 	return unspentTxs
 }
-
 
 func (chain *Blockchain) FindUTXO(address string) []TxOutput {
 	var UTXOs []TxOutput
@@ -201,7 +215,12 @@ func InitBlockchain() *Blockchain {
 
 		fmt.Println("Genesis created")
 
+		// store block metadata (without txs)
 		err = txn.Set(genesis.Hash, genesis.Serialize())
+		Handle(err)
+		// store transactions separately under key txs-<blockHash>
+		txsKey := append([]byte("txs-"), genesis.Hash...)
+		err = txn.Set(txsKey, SerializeTransactions([]*Transaction{cbtx}))
 		Handle(err)
 
 		err = txn.Set([]byte("lh"), genesis.Hash)
@@ -218,6 +237,7 @@ func InitBlockchain() *Blockchain {
 }
 
 func (chain *Blockchain) AddBlock(transactions []*Transaction) {
+
 	var lastHash []byte
 	err := chain.Database.View(func(txn *badger.Txn) error {
 		item, err := txn.Get([]byte("lh"))
@@ -236,6 +256,10 @@ func (chain *Blockchain) AddBlock(transactions []*Transaction) {
 
 	err = chain.Database.Update(func(txn *badger.Txn) error {
 		err := txn.Set(newBlock.Hash, newBlock.Serialize())
+		Handle(err)
+		// store transactions separately under key txs-<blockHash>
+		txsKey := append([]byte("txs-"), newBlock.Hash...)
+		err = txn.Set(txsKey, SerializeTransactions(transactions))
 		Handle(err)
 		err = txn.Set([]byte("lh"), newBlock.Hash)
 

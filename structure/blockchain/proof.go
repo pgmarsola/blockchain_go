@@ -10,6 +10,7 @@ import (
 	"math/big"
 )
 
+// difficulty level of mining, the lower the target, the harder it is to mine
 const Difficulty = 18
 
 type ProofOfWork struct {
@@ -17,39 +18,38 @@ type ProofOfWork struct {
 	Target *big.Int
 }
 
-func NewProof(b*Block) *ProofOfWork{
+func NewProof(b *Block) *ProofOfWork {
 	target := big.NewInt(1)
-	target.Lsh(target, uint(256 - Difficulty))
+	target.Lsh(target, uint(256-Difficulty))
 	pow := &ProofOfWork{b, target}
 	return pow
 }
 
-func (pow *ProofOfWork) InitData(nonce int) []byte{
+func (pow *ProofOfWork) InitData(nonce int) []byte {
 	data := bytes.Join([][]byte{
 		pow.Block.PrevHash,
 		pow.Block.HashTransactions(),
 		ToHex(int64(nonce)),
 		ToHex(int64(Difficulty)),
-		},
-		[]byte{ 
-	})
+	},
+		[]byte{})
 	return data
 }
 
-func (pow *ProofOfWork) Run() (int, []byte){
+func (pow *ProofOfWork) Run() (int, []byte) {
 	var intHash big.Int
 	var hash [32]byte
 
 	nonce := 0
 
-	for nonce < math.MaxInt64{
+	for nonce < math.MaxInt64 {
 		data := pow.InitData(nonce)
 		hash = sha256.Sum256(data)
 
 		fmt.Printf("\r%x", hash)
 		intHash.SetBytes(hash[:])
 
-		if intHash.Cmp(pow.Target) == -1{
+		if intHash.Cmp(pow.Target) == -1 {
 			break
 		} else {
 			nonce++
@@ -61,7 +61,7 @@ func (pow *ProofOfWork) Run() (int, []byte){
 	return nonce, hash[:]
 }
 
-func (pow *ProofOfWork) Validate() bool{
+func (pow *ProofOfWork) Validate() bool {
 	var intHash big.Int
 	data := pow.InitData(pow.Block.Nonce)
 	hash := sha256.Sum256(data)
@@ -70,10 +70,10 @@ func (pow *ProofOfWork) Validate() bool{
 	return intHash.Cmp(pow.Target) == -1
 }
 
-func ToHex(num int64) []byte{
+func ToHex(num int64) []byte {
 	buff := new(bytes.Buffer)
 	err := binary.Write(buff, binary.BigEndian, num)
-	if err != nil{
+	if err != nil {
 		log.Panic(err)
 	}
 	return buff.Bytes()
